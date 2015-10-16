@@ -199,9 +199,17 @@ view address model =
               ]
           )
         ]
-      
 
-main : Signal Html
-main = StartApp.start { model = initialModel
-                      , update = update
-                      , view = view }
+
+inbox : Signal.Mailbox Action
+inbox = Signal.mailbox None
+        
+            
+--main : Signal Html
+main =
+  let
+    model = S.foldp update initialModel inbox.signal
+  in
+    S.map (view inbox.address) model
+
+       
