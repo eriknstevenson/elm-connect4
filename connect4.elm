@@ -82,7 +82,7 @@ newSpace =
 -- These equations may be incorrect.
 calcPos id =
   { x = (id-1) % 7
-  , y = ((toFloat id)-1) / 6 |> floor }
+  , y = ((toFloat id)-1) / 7 |> floor }
 
 type alias Model = 
   { board : Board
