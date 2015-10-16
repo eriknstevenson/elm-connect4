@@ -43,6 +43,13 @@ convertTo2D board size =
     splitEvery size board
 
 
+apply : a -> List (a -> b) -> List b
+apply argument functions =
+  case functions of
+    [] -> []
+    (f::fs) -> (f argument) :: (apply argument fs)
+
+
 (!!) : List a -> Int -> M.Maybe a
 xs !! n = 
   if | n < 0     -> Nothing
@@ -131,10 +138,11 @@ update action model =
           case move of
             Nothing -> []
             Just pos ->
-              [ checkVerticals pos
-              , checkHorizontals pos
-              , checkDiagonalsA pos
-              , checkDiagonalsB pos ]
+              apply pos
+                      [ checkVerticals
+                      , checkHorizontals
+                      , checkDiagonalsA
+                      , checkDiagonalsB ]
 
         move : Maybe {x:Int, y:Int}
         move =
