@@ -8,7 +8,6 @@ import Signal as S
 import List as L
 import List.Extra as LE
 import Maybe as M
-import StartApp.Simple as StartApp
 
 -- MODEL
 
@@ -18,18 +17,18 @@ type Action
 
 
 type Player 
-  = Red 
-  | Blue
+  = Player1
+  | Player2
 
 
 toggleTurn : Player -> Player
 toggleTurn player = 
   case player of
-    Red -> Blue
-    Blue -> Red
+    Player1 -> Player2
+    Player2 -> Player1
 
 
-type alias Board = List Square
+type alias Board = List Space
 
 
 convertTo2D : List a -> Int -> List (List a)
@@ -53,22 +52,30 @@ xs !! n =
          (_::xs,n) -> xs !! (n-1)
 
 
-type SquareStatus 
+type SpaceStatus
   = Empty 
-  | X 
-  | O
+  | Red
+  | Blue
 
 
-type alias Square = 
-  { status : SquareStatus
-  , id : Int }
+type alias Space = 
+  { status : SpaceStatus
+  , id : Int
+  , pos : {x : Int, y : Int}
+  }
 
 
-newSquare : Square
-newSquare = 
+newSpace : Space
+newSpace = 
   { status = Empty
-  , id = 0 }
+  , id = 0
+  , pos = { x=0, y=0 }
+  }
 
+-- These equations may be incorrect.
+calcPos id =
+  { x = (id-1) % 7
+  , y = ((toFloat id)-1) / 6 |> floor }
 
 type alias Model = 
   { board : Board
@@ -79,8 +86,9 @@ type alias Model =
 
 initialModel : Model
 initialModel =
-  { board = L.map2 (\sq nId -> {sq | id <- nId} ) (L.repeat 9 newSquare) [1..42]
-  , turn = Red
+  { board = L.map2 (\spc nId -> { spc | id <- nId, pos <- calcPos nId  })
+    (L.repeat 42 newSpace) [1..42]
+  , turn = Player1
   , winner = Nothing
   , gameOver = False }
 
@@ -93,24 +101,21 @@ update action model =
     
     MakeMove id ->
       let
-        updateStatus square = 
-          if square.id==id then 
-            {square | status <- newStatus} 
+        updateStatus space = 
+          if space.id==id then 
+            { space | status <- newStatus} 
           else 
-            square
+            space
 
         newStatus = case model.turn of 
-          Red -> X
-          Blue -> O
-
-        moveX = (id-1) % 3
-        moveY = ((toFloat id)-1) / 3 |> floor
+          Player1 -> Red
+          Player2 -> Blue
 
         updatedBoard = L.map updateStatus model.board
 
         updatedBoardStatus = L.map .status updatedBoard
 
-        convertedBoard = convertTo2D updatedBoardStatus 3
+        convertedBoard = convertTo2D updatedBoardStatus 7
 
         isThereAWinner = checks
                          |> L.filter (\n->n>=3)
@@ -119,29 +124,40 @@ update action model =
 
         checkForWinner = case isThereAWinner of
           True -> Just model.turn
-          False -> Nothing
-       
-        checks = 
-          [ checkVerticals
-          , checkHorizontals
-          , checkDiagonalsA
-          , checkDiagonalsB ]
-        
-        checkVerticals = 
-          L.sum [ checkDir (moveX, moveY) (0, -1) 1
-                , checkDir (moveX, moveY) (0, 1) 1 ] - 1
+          False -> Nothing           
 
-        checkHorizontals = 
-          L.sum [ checkDir (moveX, moveY) (-1, 0) 1
-                , checkDir (moveX, moveY) (1, 0) 1 ] - 1
+                   
+        checks =
+          case move of
+            Nothing -> []
+            Just pos ->
+              [ checkVerticals pos
+              , checkHorizontals pos
+              , checkDiagonalsA pos
+              , checkDiagonalsB pos ]
 
-        checkDiagonalsA = 
-          L.sum [ checkDir (moveX, moveY) (-1, -1) 1
-                , checkDir (moveX, moveY) (1, 1) 1 ] - 1
+        move : Maybe {x:Int, y:Int}
+        move =
+          case model.board !! id of
+            Nothing -> Nothing
+            Just space ->
+              Just space.pos
+      
+        checkVerticals pos = 
+          L.sum [ checkDir (pos.x, pos.y) (0, -1) 1
+                , checkDir (pos.x, pos.y) (0, 1) 1 ] - 1
+
+        checkHorizontals pos = 
+          L.sum [ checkDir (pos.x, pos.y) (-1, 0) 1
+                , checkDir (pos.x, pos.y) (1, 0) 1 ] - 1
+
+        checkDiagonalsA pos = 
+          L.sum [ checkDir (pos.x, pos.y) (-1, -1) 1
+                , checkDir (pos.x, pos.y) (1, 1) 1 ] - 1
         
-        checkDiagonalsB = 
-          L.sum [ checkDir (moveX, moveY) (1, -1) 1
-                , checkDir (moveX, moveY) (-1, 1) 1 ] - 1
+        checkDiagonalsB pos = 
+          L.sum [ checkDir (pos.x, pos.y) (1, -1) 1
+                , checkDir (pos.x, pos.y) (-1, 1) 1 ] - 1
         
         checkDir : (Int, Int) -> (Int, Int) -> Int -> Int
         checkDir (x, y) (dx, dy) total = 
@@ -168,29 +184,29 @@ update action model =
 view : S.Address Action -> Model -> Html
 view address model = 
   let
-    makeSquare : Square -> Html
-    makeSquare square =
-      case square.status of
+    makeSpace : Space -> Html
+    makeSpace space =
+      case space.status of
         Empty -> div [ class "empty",
-                 onClick address (MakeMove square.id) ] []
-        X -> div [class "x"]
+                 onClick address (MakeMove space.id) ] []
+        Red -> div [class "x"]
           [text "X"]
-        O -> div [class "o"]
+        Blue -> div [class "o"]
           [text "O"]
     
     winnerToString : Maybe Player -> String
     winnerToString winner =
       case winner of
         Nothing -> "Nobody won.. -.-"
-        Just Red -> "Red won! XD"
-        Just Blue -> "Blue won! XD"
+        Just Player1 -> "Player 1 won! XD"
+        Just Player2 -> "Player 2 won! XD"
 
   in
     div [] 
-      [ div [id "board"] (L.map makeSquare model.board)
+      [ div [id "board"] (L.map makeSpace model.board)
       , div [class "notice"] 
           (case model.gameOver of
-            False -> [text "Tictactoe"]
+            False -> [text "Connect 4"]
             True ->
               [ ul []
                 [ li [] [text "game over"]
