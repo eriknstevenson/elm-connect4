@@ -11,13 +11,13 @@ module.exports = function(grunt) {
         elm: {
             compile: {
                 files: {
-                    "connect4.js": ["connect4.elm"]
+                    "connect4.js": ["Connect4.elm"]
                 }
             }
         },
         watch: {
             elm: {
-                files: ["connect4.elm"],
+                files: ["Connect4.elm","Connect4/Util.elm"],
                 tasks: ["elm"]
             }
         },

@@ -1,5 +1,14 @@
 module Connect4 where
 
+
+{-| A simple reimagination of the classic game, using the HTML module.
+
+#Functions
+@docs view, update
+
+-}
+
+
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -8,6 +17,8 @@ import Signal as S
 import List as L
 import List.Extra as LE
 import Maybe as M
+
+import Connect4.Util exposing (..)
 
 -- MODEL
 
@@ -62,10 +73,11 @@ newSpace =
   , pos = { x=0, y=0 }
   }
 
--- These equations may be incorrect.
+
 calcPos id =
   { x = (id-1) % 7
   , y = ((toFloat id)-1) / 7 |> floor }
+
 
 type alias Model = 
   { board : Board
@@ -82,8 +94,8 @@ initialModel =
   , winner = Nothing
   , gameOver = False }
 
---UPDATE
-
+{-| Takes an action and a model and delivers an updated model.
+-}
 update : Action -> Model -> Model
 update action model =
   case action of
@@ -170,8 +182,8 @@ update action model =
                         , gameOver <- updatedGameOver }
         True -> model
 
--- VIEW
-
+{-| This function converts a model into some Html and Styles.
+-}
 view : S.Address Action -> Model -> Html
 view address model = 
   let

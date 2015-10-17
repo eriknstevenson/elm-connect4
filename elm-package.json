@@ -6,7 +6,10 @@
     "source-directories": [
         "."
     ],
-    "exposed-modules": [],
+    "exposed-modules": [
+        "Connect4",
+        "Connect4.Util"
+    ],
     "dependencies": {
         "TheSeamau5/elm-check": "3.2.0 <= v < 4.0.0",
         "adam-r-kowalski/Elm-Css": "2.1.1 <= v < 3.0.0",
