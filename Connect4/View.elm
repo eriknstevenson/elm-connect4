@@ -1,6 +1,12 @@
 module Connect4.View (view) where
 
--- VIEW
+import Elm-Html exposing (..)
+import Elm-Attribute exposing (..)
+
+import Signal as S
+import List as L
+
+import Connect4.Model exposing (..)
 
 view : S.Address Action -> Model -> Html
 view address model = 
