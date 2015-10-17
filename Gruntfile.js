@@ -17,7 +17,7 @@ module.exports = function(grunt) {
         },
         watch: {
             elm: {
-                files: ["Connect4.elm","Connect4/Util.elm"],
+                files: ["Connect4.elm","Connect4/*.elm"],
                 tasks: ["elm"]
             }
         },

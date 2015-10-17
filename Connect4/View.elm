@@ -1,10 +1,11 @@
 module Connect4.View (view) where
 
-import Elm-Html exposing (..)
-import Elm-Attribute exposing (..)
-
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Signal as S
 import List as L
+import Maybe as M
 
 import Connect4.Model exposing (..)
 

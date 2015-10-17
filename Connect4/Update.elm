@@ -1,5 +1,13 @@
 module Connect4.Update (update) where
 
+import List as L
+import List.Extra as LE
+import Maybe as M
+
+import Connect4.Model exposing (..)
+import Connect4.Util exposing (..)
+
+
 update : Action -> Model -> Model
 update action model =
   case action of

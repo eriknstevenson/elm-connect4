@@ -1,4 +1,13 @@
-module Connect4.Model (Action, Player, Board, SpaceStatus, Space, newSpace, Model, initialModel) where
+module Connect4.Model ( Action(None, MakeMove)
+                      , Player(Player1, Player2)
+                      , Board
+                      , SpaceStatus(Empty, Red, Blue)
+                      , Space
+                      , newSpace
+                      , Model
+                      , initialModel ) where
+
+import List as L
 
 -- MODEL
 
