@@ -1,4 +1,4 @@
-module Connect4.Model (Action, Player, Board) where
+module Connect4.Model (Action, Player, Board, SpaceStatus, Space, newSpace, Model, initialModel) where
 
 -- MODEL
 
