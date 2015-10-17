@@ -1,4 +1,4 @@
-module Connect4.Update where
+module Connect4.Update (update) where
 
 update : Action -> Model -> Model
 update action model =
@@ -16,6 +16,17 @@ update action model =
         newStatus = case model.turn of 
           Player1 -> Red
           Player2 -> Blue
+
+        convertTo2D : List a -> Int -> List (List a)
+        convertTo2D board size = 
+          let 
+            splitEvery n list = 
+              case list of
+                [] -> []
+                list -> let (first, rest) = LE.splitAt n list
+                        in first :: (splitEvery n rest)
+          in
+            splitEvery size board
 
         updatedBoard = L.map updateStatus model.board
 
