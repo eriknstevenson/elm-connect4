@@ -11,30 +11,18 @@
     background: #B2B2B2;
 }
 
-.x {
+.red {
     width: 100px;
     height: 100px;
     float: left;
     background: #FF3300;
-    color: #FFFFFF;
     border-radius: 10px;
-    font-family: 'Helvetica', 'Arial', sans-serif;
-    font-size: 5em;
-    font-weight: bold;
-    text-align: center;
-    vertical-align: center;
 }
 
-.o {
+.blue {
     width: 100px;
     height: 100px;
     float: left;
     background: #3366FF;
-    color: #FFFFFF;
     border-radius: 10px;
-    font-family: 'Helvetica', 'Arial', sans-serif;
-    font-size: 5em;
-    font-weight: bold;
-    text-align: center;
-    vertical-align: center;
 }

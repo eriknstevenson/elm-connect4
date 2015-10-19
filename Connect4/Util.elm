@@ -9,6 +9,7 @@ module Connect4.Util (apply, (!!)) where
 
 -- Native Imports
 import Maybe as M
+import List.Extra as LE
 
 
 {-| Apply an argument to each function in a list.
@@ -29,3 +30,10 @@ xs !! n =
          ([],_)    -> Nothing
          (x::xs,0) -> Just x
          (_::xs,n) -> xs !! (n-1)
+
+splitEvery n list = 
+  case list of
+    [] -> []
+    list -> let (x, xs) = LE.splitAt n list
+            in x :: (splitEvery n xs)
+

@@ -33,15 +33,13 @@ type SpaceStatus
 type alias Space = 
   { status : SpaceStatus
   , id : Int
-  , pos : {x : Int, y : Int}
   }
 
 
 newSpace : Space
 newSpace = 
   { status = Empty
-  , id = 0
-  , pos = { x=0, y=0 }
+  , id = -1
   }
 
 
@@ -54,13 +52,8 @@ type alias Model =
 
 initialModel : Model
 initialModel =
-  let
-    calcPos id =
-      { x = (id-1) % 7
-      , y = ((toFloat id)-1) / 7 |> floor }
-  in
-    { board = L.map2 (\spc nId -> { spc | id <- nId, pos <- calcPos nId  })
-      (L.repeat 42 newSpace) [1..42]
-    , turn = Player1
-    , winner = Nothing
-    , gameOver = False }
+  { board = L.map2 (\spc nId -> { spc | id <- nId })
+            (L.repeat 42 newSpace) [0..41]
+  , turn = Player1
+  , winner = Nothing
+  , gameOver = False }

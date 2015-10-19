@@ -15,12 +15,12 @@ view address model =
     makeSpace : Space -> Html
     makeSpace space =
       case space.status of
-        Empty -> div [ class "empty",
-                 onClick address (MakeMove space.id) ] []
-        Red -> div [class "x"]
-          [text "X"]
-        Blue -> div [class "o"]
-          [text "O"]
+        Empty -> div [ class "empty"
+                     , onClick address (MakeMove space.id) ] []
+        Red -> div [ class "red"
+                   , onClick address (MakeMove space.id) ] []
+        Blue -> div [ class "blue"
+                    , onClick address (MakeMove space.id) ] []
     
     winnerToString : Maybe Player -> String
     winnerToString winner =
