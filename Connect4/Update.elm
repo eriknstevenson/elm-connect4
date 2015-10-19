@@ -17,33 +17,26 @@ update action model =
     MakeMove id ->
       let
 
-        validMove =
-          True
-        
-        -- id : the id # of the space that is the lowest, empty space in the clicked column.
-        {- id =
+        idToUpdate =
           let
-            boardGrid = convertTo2D model.board 7
-            xyToId x y = (y*7) + x + 1
-            newId = xyToId findX (findY 0)
-            findX = column
-            findY y =
-              case (getBoardXY boardGrid column y) of
+            column = id % 7
+            findOpenSpace at =
+              case (model.board !! at) of
                 Nothing ->
-                  -- gone off the board
-                  y-1
-                Just spc ->
-                  case spc.status of
+                  at - 7
+                Just space ->
+                  case space.status of
                     Empty ->
-                      -- space is unoccupied, check the next one down.
-                      findY (y+1)
+                      -- occupied, increment index by 7.
+                      findOpenSpace (at + 7)
                     _ ->
-                      -- space is occupied, return the id of the previous space checked
-                      y-1
-                  
+                      at - 7
           in
-            if newId > 0 then newId else -1
-        -}
+            findOpenSpace column
+        
+        validMove =
+          if idToUpdate >= 0 then True else False
+        
         
         newStatus = case model.turn of 
           Player1 -> Red
@@ -99,7 +92,7 @@ update action model =
               False -> Nothing
                        
                        
-        checkDir : Int -> (Int, Int) -> Int -> Int
+        checkDir : Int -> Int -> Int -> Int
         checkDir index increment total = 
           case updatedBoard !! (index + increment) of
             Nothing -> total
