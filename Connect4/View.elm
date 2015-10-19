@@ -21,7 +21,13 @@ view address model =
                    , onClick address (MakeMove space.id) ] []
         Blue -> div [ class "blue"
                     , onClick address (MakeMove space.id) ] []
-    
+
+    currentTurn : String
+    currentTurn =
+      case model.turn of
+        Player1 -> "Red"
+        Player2 -> "Blue"
+      
     winnerToString : Maybe Player -> String
     winnerToString winner =
       case winner of
@@ -31,10 +37,11 @@ view address model =
 
   in
     div [] 
-      [ div [id "board"] (L.map makeSpace model.board)
-      , div [class "notice"] 
+      [ div [class "notice"] 
           (case model.gameOver of
-            False -> [text "Connect 4"]
+            False -> [ text "Connect 4 - "
+                     , text currentTurn
+                     , text "'s Turn" ]
             True ->
               [ ul []
                 [ li [] [text "game over"]
@@ -42,4 +49,5 @@ view address model =
                 , li [] [text "click refresh to try again"] ]
               ]
           )
-        ]
+      , div [id "board"] (L.map makeSpace model.board)
+      ]

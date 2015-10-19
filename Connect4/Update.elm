@@ -19,6 +19,7 @@ update action model =
 
         idToUpdate =
           let
+            openSpace = findOpenSpace column
             column = id % 7
             findOpenSpace at =
               case (model.board !! at) of
@@ -32,10 +33,12 @@ update action model =
                     _ ->
                       at - 7
           in
-            findOpenSpace column
+            if openSpace < 0 then Nothing else Just openSpace
         
         validMove =
-          if idToUpdate >= 0 then True else False
+          case idToUpdate of
+            Nothing -> False
+            _ -> True
         
         
         newStatus = case model.turn of 
@@ -44,11 +47,14 @@ update action model =
 
         updatedBoard =
           let
-            updateStatus space = 
-              if space.id==idToUpdate then 
-                { space | status <- newStatus} 
-              else 
-                space
+            updateStatus space =
+              case idToUpdate of
+                Nothing -> space
+                Just id ->
+                  if space.id == id then 
+                    { space | status <- newStatus} 
+                  else 
+                    space
           in
             L.map updateStatus model.board
 
@@ -73,9 +79,9 @@ update action model =
                   L.sum [ checkDir index -6 1
                         , checkDir index  6 1 ] - 1  
               in
-                case validMove of
-                  False -> []
-                  True ->
+                case idToUpdate of
+                  Nothing -> []
+                  Just id ->
                     apply id
                             [ checkVerticals
                             , checkHorizontals
@@ -96,12 +102,9 @@ update action model =
         checkDir index increment total = 
           case updatedBoard !! (index + increment) of
             Nothing -> total
-            Just spc -> 
-              if spc.status  == newStatus then
-                let
-                  _ = Debug.log "match found at i " (spc)
-                in
-                  checkDir (index + increment) (increment) (total+1)
+            Just space -> 
+              if space.status == newStatus then
+                checkDir (index + increment) (increment) (total+1)
               else
                 total
         
@@ -113,11 +116,12 @@ update action model =
 
         toggleTurn : Player -> Player
         toggleTurn player = 
-          if id > 0 then
-            case player of
-              Player1 -> Player2
-              Player2 -> Player1
-          else player
+          case validMove of
+            True ->
+              case player of
+                Player1 -> Player2
+                Player2 -> Player1
+            False -> player
     
       in case model.gameOver of
         False -> {model | board <- updatedBoard
