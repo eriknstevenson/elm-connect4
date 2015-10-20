@@ -116,7 +116,6 @@ update action model =
             onUpper = compare upper
             stop = (increment < 0 && onLower == Just True) ||
                    (increment > 0 && onUpper == Just True)
-            _ = Debug.log "column, lower, upper, onLower, onUpper" (column, lower, upper, onLower, onUpper)
                   
           in
             case stop of
