@@ -907,6 +907,7 @@ Elm.Connect4.Update.make = function (_elm) {
    $Basics = Elm.Basics.make(_elm),
    $Connect4$Model = Elm.Connect4.Model.make(_elm),
    $Connect4$Util = Elm.Connect4.Util.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
    $List = Elm.List.make(_elm),
    $List$Extra = Elm.List.Extra.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
@@ -971,10 +972,10 @@ Elm.Connect4.Update.make = function (_elm) {
                                   case "Player2":
                                   return $Connect4$Model.Player1;}
                                _U.badCase($moduleName,
-                               "between lines 121 and 124");
+                               "between lines 143 and 146");
                             }();}
                        _U.badCase($moduleName,
-                       "between lines 119 and 126");
+                       "between lines 141 and 148");
                     }();
                  };
                  var updatedBoard = function () {
@@ -995,65 +996,123 @@ Elm.Connect4.Update.make = function (_elm) {
                     updateStatus,
                     model.board);
                  }();
-                 var checkDir = F3(function (index,
+                 var checkDir = F4(function (index,
+                 bounds,
                  increment,
                  total) {
                     return function () {
-                       var _v11 = A2($Connect4$Util._op["!!"],
-                       updatedBoard,
-                       index + increment);
-                       switch (_v11.ctor)
-                       {case "Just":
-                          return _U.eq(_v11._0.status,
-                            newStatus) ? A3(checkDir,
-                            index + increment,
-                            increment,
-                            total + 1) : total;
-                          case "Nothing": return total;}
-                       _U.badCase($moduleName,
-                       "between lines 103 and 111");
+                       var upper = A2($Maybe.map,
+                       $Basics.snd,
+                       bounds);
+                       var lower = A2($Maybe.map,
+                       $Basics.fst,
+                       bounds);
+                       var column = A2($Basics._op["%"],
+                       index,
+                       7);
+                       var compare = $Maybe.map(F2(function (x,
+                       y) {
+                          return _U.eq(x,y);
+                       })(column));
+                       var onLower = compare(lower);
+                       var onUpper = compare(upper);
+                       var stop = _U.cmp(increment,
+                       0) < 0 && _U.eq(onLower,
+                       $Maybe.Just(true)) || _U.cmp(increment,
+                       0) > 0 && _U.eq(onUpper,
+                       $Maybe.Just(true));
+                       var _ = A2($Debug.log,
+                       "column, lower, upper, onLower, onUpper",
+                       {ctor: "_Tuple5"
+                       ,_0: column
+                       ,_1: lower
+                       ,_2: upper
+                       ,_3: onLower
+                       ,_4: onUpper});
+                       return function () {
+                          switch (stop)
+                          {case false:
+                             return function () {
+                                  var _v12 = A2($Connect4$Util._op["!!"],
+                                  updatedBoard,
+                                  index + increment);
+                                  switch (_v12.ctor)
+                                  {case "Just":
+                                     return _U.eq(_v12._0.status,
+                                       newStatus) ? A4(checkDir,
+                                       index + increment,
+                                       bounds,
+                                       increment,
+                                       total + 1) : total;
+                                     case "Nothing": return total;}
+                                  _U.badCase($moduleName,
+                                  "between lines 125 and 133");
+                               }();
+                             case true: return total;}
+                          _U.badCase($moduleName,
+                          "between lines 122 and 133");
+                       }();
                     }();
                  });
                  var checkForWinner = function () {
                     var checks = function () {
-                       var checkDiagonalsB = function (index) {
-                          return $List.sum(_L.fromArray([A3(checkDir,
+                       var checkVerticals = function (index) {
+                          return $List.sum(_L.fromArray([A4(checkDir,
                                                         index,
-                                                        -6,
+                                                        $Maybe.Nothing,
+                                                        -7,
                                                         1)
-                                                        ,A3(checkDir,
+                                                        ,A4(checkDir,
                                                         index,
-                                                        6,
+                                                        $Maybe.Nothing,
+                                                        7,
                                                         1)])) - 1;
                        };
-                       var checkDiagonalsA = function (index) {
-                          return $List.sum(_L.fromArray([A3(checkDir,
-                                                        index,
-                                                        -8,
-                                                        1)
-                                                        ,A3(checkDir,
-                                                        index,
-                                                        8,
-                                                        1)])) - 1;
-                       };
+                       var lower = function () {
+                          switch (idToUpdate.ctor)
+                          {case "Just": return 0;
+                             case "Nothing": return -1;}
+                          _U.badCase($moduleName,
+                          "between lines 67 and 70");
+                       }();
+                       var upper = lower + 6;
+                       var bounds = $Maybe.Just({ctor: "_Tuple2"
+                                                ,_0: lower
+                                                ,_1: upper});
                        var checkHorizontals = function (index) {
-                          return $List.sum(_L.fromArray([A3(checkDir,
+                          return $List.sum(_L.fromArray([A4(checkDir,
                                                         index,
+                                                        bounds,
                                                         -1,
                                                         1)
-                                                        ,A3(checkDir,
+                                                        ,A4(checkDir,
                                                         index,
+                                                        bounds,
                                                         1,
                                                         1)])) - 1;
                        };
-                       var checkVerticals = function (index) {
-                          return $List.sum(_L.fromArray([A3(checkDir,
+                       var checkDiagonalsA = function (index) {
+                          return $List.sum(_L.fromArray([A4(checkDir,
                                                         index,
-                                                        -7,
+                                                        bounds,
+                                                        -8,
                                                         1)
-                                                        ,A3(checkDir,
+                                                        ,A4(checkDir,
                                                         index,
-                                                        7,
+                                                        bounds,
+                                                        8,
+                                                        1)])) - 1;
+                       };
+                       var checkDiagonalsB = function (index) {
+                          return $List.sum(_L.fromArray([A4(checkDir,
+                                                        index,
+                                                        bounds,
+                                                        -6,
+                                                        1)
+                                                        ,A4(checkDir,
+                                                        index,
+                                                        bounds,
+                                                        6,
                                                         1)])) - 1;
                        };
                        return function () {
@@ -1068,7 +1127,7 @@ Elm.Connect4.Update.make = function (_elm) {
                              case "Nothing":
                              return _L.fromArray([]);}
                           _U.badCase($moduleName,
-                          "between lines 82 and 91");
+                          "between lines 89 and 98");
                        }();
                     }();
                     var isThereAWinner = $Basics.not($List.isEmpty($List.filter(function (n) {
@@ -1081,7 +1140,7 @@ Elm.Connect4.Update.make = function (_elm) {
                           case true:
                           return $Maybe.Just(model.turn);}
                        _U.badCase($moduleName,
-                       "between lines 96 and 101");
+                       "between lines 103 and 108");
                     }();
                  }();
                  var updatedGameOver = function () {
@@ -1094,8 +1153,8 @@ Elm.Connect4.Update.make = function (_elm) {
                     $Maybe.Nothing);
                  }();
                  return function () {
-                    var _v16 = model.gameOver;
-                    switch (_v16)
+                    var _v19 = model.gameOver;
+                    switch (_v19)
                     {case false:
                        return _U.replace([["board"
                                           ,updatedBoard]
@@ -1105,12 +1164,12 @@ Elm.Connect4.Update.make = function (_elm) {
                          model);
                        case true: return model;}
                     _U.badCase($moduleName,
-                    "between lines 126 and 131");
+                    "between lines 148 and 153");
                  }();
               }();
             case "None": return model;}
          _U.badCase($moduleName,
-         "between lines 14 and 131");
+         "between lines 14 and 153");
       }();
    });
    _elm.Connect4.Update.values = {_op: _op
