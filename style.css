@@ -1,27 +1,27 @@
 #board {
-    width: 700px;
-    height: 600px;
+    width: 350px;
+    height: 300px;
 }
 
 .empty {
-    width: 100px;
-    height: 100px;
+    width: 50px;
+    height: 50px;
     float: left;
     border-radius: 10px;
     background: #B2B2B2;
 }
 
 .red {
-    width: 100px;
-    height: 100px;
+    width: 50px;
+    height: 50px;
     float: left;
     background: #FF3300;
     border-radius: 10px;
 }
 
 .blue {
-    width: 100px;
-    height: 100px;
+    width: 50px;
+    height: 50px;
     float: left;
     background: #3366FF;
     border-radius: 10px;

@@ -63,21 +63,28 @@ update action model =
           let
             checks =
               let
+                lower =
+                  case idToUpdate of
+                    Nothing -> -1
+                    Just id -> 0
+                upper =
+                  lower + 6
+                bounds = Just (lower, upper)
                 checkVerticals index =
-                  L.sum [ checkDir index -7 1
-                        , checkDir index  7 1 ] - 1
+                  L.sum [ checkDir index Nothing -7 1
+                        , checkDir index Nothing  7 1 ] - 1
 
                 checkHorizontals index =
-                  L.sum [ checkDir index -1 1
-                        , checkDir index  1 1 ] - 1
+                  L.sum [ checkDir index bounds -1 1
+                        , checkDir index bounds  1 1 ] - 1
 
                 checkDiagonalsA index =
-                  L.sum [ checkDir index -8 1
-                        , checkDir index  8 1 ] - 1
+                  L.sum [ checkDir index bounds -8 1
+                        , checkDir index bounds  8 1 ] - 1
         
                 checkDiagonalsB index =
-                  L.sum [ checkDir index -6 1
-                        , checkDir index  6 1 ] - 1  
+                  L.sum [ checkDir index bounds -6 1
+                        , checkDir index bounds  6 1 ] - 1  
               in
                 case idToUpdate of
                   Nothing -> []
@@ -98,15 +105,30 @@ update action model =
               False -> Nothing
                        
                        
-        checkDir : Int -> Int -> Int -> Int
-        checkDir index increment total = 
-          case updatedBoard !! (index + increment) of
-            Nothing -> total
-            Just space -> 
-              if space.status == newStatus then
-                checkDir (index + increment) (increment) (total+1)
-              else
-                total
+        checkDir : Int -> Maybe (Int, Int) -> Int -> Int -> Int
+        checkDir index bounds increment total =
+          let
+            column = index % 7
+            lower = M.map fst bounds
+            upper = M.map snd bounds
+            compare = M.map ((==) column)
+            onLower = compare lower
+            onUpper = compare upper
+            stop = (increment < 0 && onLower == Just True) ||
+                   (increment > 0 && onUpper == Just True)
+            _ = Debug.log "column, lower, upper, onLower, onUpper" (column, lower, upper, onLower, onUpper)
+                  
+          in
+            case stop of
+              True -> total
+              False ->
+                case updatedBoard !! (index + increment) of
+                  Nothing -> total
+                  Just space -> 
+                    if space.status == newStatus then
+                      checkDir (index + increment) bounds (increment) (total+1)
+                    else
+                      total
         
         updatedGameOver =
           let
